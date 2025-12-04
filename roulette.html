@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>레스토랑 룰렛</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            text-align: center;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        .roulette-container {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            margin: 0 auto 30px;
+        }
+
+        .wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            position: relative;
+            transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+            box-shadow: 0 0 0 15px #fff, 0 0 0 18px #333, 0 0 30px rgba(0,0,0,0.3);
+        }
+
+        .wheel-segment {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            transform-origin: 100% 100%;
+            overflow: hidden;
+        }
+
+        .wheel-segment-fill {
+            width: 200%;
+            height: 200%;
+            transform-origin: 0% 100%;
+        }
+
+        .wheel-segment-text {
+            position: absolute;
+            width: 50%;
+            text-align: right;
+            padding-right: 20px;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            font-weight: bold;
+            font-size: 14px;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .pointer {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-top: 40px solid #ff3838;
+            z-index: 10;
+            filter: drop-shadow(0 3px 5px rgba(0,0,0,0.3));
+        }
+
+        .center-circle {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+            box-shadow: 0 0 0 5px #fff, 0 0 20px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #333;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 50px;
+            font-size: 1.3em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            font-weight: bold;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(0,0,0,0.3);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .result {
+            margin-top: 30px;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+            min-height: 40px;
+        }
+
+        .probability-table {
+            margin-top: 30px;
+            text-align: left;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .probability-table h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .probability-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .probability-item:last-child {
+            border-bottom: none;
+        }
+
+        .prize-name {
+            font-weight: 500;
+        }
+
+        .prize-probability {
+            color: #667eea;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎰 레스토랑 룰렛</h1>
+        
+        <div class="roulette-container">
+            <div class="pointer"></div>
+            <div class="wheel" id="wheel"></div>
+            <div class="center-circle">START</div>
+        </div>
+
+        <button id="spinBtn" onclick="spin()">룰렛 돌리기!</button>
+        
+        <div class="result" id="result"></div>
+
+        <div class="probability-table">
+            <h3>🎁 경품 확률</h3>
+            <div class="probability-item">
+                <span class="prize-name">꽃게과자 경품</span>
+                <span class="prize-probability">30%</span>
+            </div>
+            <div class="probability-item">
+                <span class="prize-name">음료 1캔 무료</span>
+                <span class="prize-probability">11.5%</span>
+            </div>
+            <div class="probability-item">
+                <span class="prize-name">주류 1병 무료</span>
+                <span class="prize-probability">5%</span>
+            </div>
+            <div class="probability-item">
+                <span class="prize-name">간장새우 4마리 or 대하장 2마리</span>
+                <span class="prize-probability">3%</span>
+            </div>
+            <div class="probability-item">
+                <span class="prize-name">전액 무료</span>
+                <span class="prize-probability">0.5%</span>
+            </div>
+            <div class="probability-item">
+                <span class="prize-name">꽝</span>
+                <span class="prize-probability">50%</span>
+            </div>
+            <div class="probability-item" style="margin-top: 10px; padding-top: 15px; border-top: 2px solid #667eea;">
+                <span class="prize-name" style="font-weight: bold;">당첨 확률 (꽝 제외)</span>
+                <span class="prize-probability" style="font-size: 1.1em;">50%</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const prizes = [
+            { name: '꽃게과자 경품', probability: 30, color: '#FF6B6B' },
+            { name: '꽝', probability: 12.5, color: '#95A5A6' },
+            { name: '음료 1캔 무료', probability: 11.5, color: '#4ECDC4' },
+            { name: '꽝', probability: 12.5, color: '#95A5A6' },
+            { name: '주류 1병 무료', probability: 5, color: '#45B7D1' },
+            { name: '꽝', probability: 12.5, color: '#95A5A6' },
+            { name: '간장새우 4마리\nor 대하장 2마리', probability: 3, color: '#F39C12' },
+            { name: '꽝', probability: 12.5, color: '#95A5A6' },
+            { name: '🎉 전액 무료 🎉', probability: 0.5, color: '#FFD700' },
+            { name: '꽃게과자 경품', probability: 2, color: '#FF6B6B' }
+        ];
+
+        let isSpinning = false;
+        let currentRotation = 0;
+
+        function createWheel() {
+            const wheel = document.getElementById('wheel');
+            const totalSegments = prizes.length;
+            const anglePerSegment = 360 / totalSegments;
+
+            prizes.forEach((prize, index) => {
+                const segment = document.createElement('div');
+                segment.className = 'wheel-segment';
+                segment.style.transform = `rotate(${index * anglePerSegment}deg)`;
+
+                const fill = document.createElement('div');
+                fill.className = 'wheel-segment-fill';
+                fill.style.background = prize.color;
+                fill.style.transform = `rotate(${anglePerSegment}deg)`;
+
+                const text = document.createElement('div');
+                text.className = 'wheel-segment-text';
+                text.innerHTML = prize.name;
+                text.style.transform = `translateY(-50%) rotate(${anglePerSegment / 2}deg)`;
+
+                segment.appendChild(fill);
+                segment.appendChild(text);
+                wheel.appendChild(segment);
+            });
+        }
+
+        function getRandomPrize() {
+            const actualProbabilities = [
+                { name: '꽃게과자 경품', probability: 30 },
+                { name: '꽝', probability: 50 },
+                { name: '음료 1캔 무료', probability: 11.5 },
+                { name: '주류 1병 무료', probability: 5 },
+                { name: '간장새우 4마리\nor 대하장 2마리', probability: 3 },
+                { name: '🎉 전액 무료 🎉', probability: 0.5 }
+            ];
+
+            const random = Math.random() * 100;
+            let cumulative = 0;
+
+            for (let prize of actualProbabilities) {
+                cumulative += prize.probability;
+                if (random <= cumulative) {
+                    return prize.name;
+                }
+            }
+            return actualProbabilities[0].name;
+        }
+
+        function spin() {
+            if (isSpinning) return;
+            
+            isSpinning = true;
+            document.getElementById('spinBtn').disabled = true;
+            document.getElementById('result').textContent = '';
+
+            const selectedPrize = getRandomPrize();
+            
+            const prizeIndices = prizes
+                .map((p, i) => ({ name: p.name, index: i }))
+                .filter(p => p.name === selectedPrize);
+            
+            const randomPrizeIndex = prizeIndices[Math.floor(Math.random() * prizeIndices.length)].index;
+            
+            const anglePerSegment = 360 / prizes.length;
+            const targetAngle = randomPrizeIndex * anglePerSegment;
+            
+            const spins = 5 + Math.random() * 3;
+            const finalRotation = (360 * spins) + (360 - targetAngle) + (anglePerSegment / 2);
+            
+            const wheel = document.getElementById('wheel');
+            currentRotation += finalRotation;
+            wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+            setTimeout(() => {
+                const resultDiv = document.getElementById('result');
+                if (selectedPrize === '꽝') {
+                    resultDiv.textContent = '😢 ' + selectedPrize + '! 다음 기회에!';
+                    resultDiv.style.color = '#95A5A6';
+                } else if (selectedPrize === '🎉 전액 무료 🎉') {
+                    resultDiv.textContent = '🎊 축하합니다! ' + selectedPrize + ' 🎊';
+                    resultDiv.style.color = '#FFD700';
+                } else {
+                    resultDiv.textContent = '🎉 축하합니다! ' + selectedPrize + '!';
+                    resultDiv.style.color = '#667eea';
+                }
+                
+                isSpinning = false;
+                document.getElementById('spinBtn').disabled = false;
+            }, 4000);
+        }
+
+        createWheel();
+    </script>
+</body>
+</html>
