@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>레스토랑 룰렛</title>
+    <title>꽃게당 이벤트 슬롯머신</title>
     <style>
         * {
             margin: 0;
@@ -27,121 +27,186 @@
             padding: 40px;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            max-width: 600px;
+            max-width: 700px;
             width: 100%;
         }
 
         h1 {
             color: #333;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             font-size: 2.5em;
         }
 
-        .roulette-container {
-            position: relative;
-            width: 400px;
-            height: 400px;
-            margin: 0 auto 30px;
+        .language-selector {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
-        .wheel {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            position: relative;
-            transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
-            box-shadow: 0 0 0 15px #fff, 0 0 0 18px #333, 0 0 30px rgba(0,0,0,0.3);
+        .lang-btn {
+            background: #f0f0f0;
+            border: 2px solid #ddd;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
         }
 
-        .wheel-segment {
-            position: absolute;
-            width: 50%;
-            height: 50%;
-            transform-origin: 100% 100%;
+        .lang-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .lang-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .slot-machine {
+            background: linear-gradient(145deg, #2c3e50, #34495e);
+            padding: 40px;
+            border-radius: 20px;
+            margin: 30px auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            border: 8px solid #f39c12;
+        }
+
+        .slot-display {
+            background: #000;
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            position: relative;
             overflow: hidden;
         }
 
-        .wheel-segment-fill {
-            width: 200%;
-            height: 200%;
-            transform-origin: 0% 100%;
-        }
-
-        .wheel-segment-text {
+        .slot-display::before {
+            content: '🦀';
             position: absolute;
-            width: 50%;
-            text-align: right;
-            padding-right: 20px;
-            top: 50%;
-            left: 0;
-            transform: translateY(-50%);
-            font-weight: bold;
-            font-size: 14px;
-            color: white;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-        }
-
-        .pointer {
-            position: absolute;
-            top: -20px;
             left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 20px solid transparent;
-            border-right: 20px solid transparent;
-            border-top: 40px solid #ff3838;
-            z-index: 10;
-            filter: drop-shadow(0 3px 5px rgba(0,0,0,0.3));
-        }
-
-        .center-circle {
-            position: absolute;
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-            border-radius: 50%;
             top: 50%;
-            left: 50%;
             transform: translate(-50%, -50%);
-            z-index: 5;
-            box-shadow: 0 0 0 5px #fff, 0 0 20px rgba(0,0,0,0.2);
+            font-size: 200px;
+            opacity: 0.1;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .reel-container {
+            width: 180px;
+            height: 120px;
+            background: linear-gradient(to bottom, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%);
+            border: 4px solid #f39c12;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+        }
+
+        .reel-container::before,
+        .reel-container::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 30px;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .reel-container::before {
+            top: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
+        }
+
+        .reel-container::after {
+            bottom: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+        }
+
+        .reel {
+            position: relative;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            transition: transform 0.1s ease-out;
+        }
+
+        .reel.spinning {
+            animation: none;
+        }
+
+        .symbol {
+            width: 100%;
+            height: 120px;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 18px;
             font-weight: bold;
-            color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            line-height: 1.3;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            flex-shrink: 0;
         }
 
         button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
             color: white;
             border: none;
-            padding: 15px 50px;
-            font-size: 1.3em;
+            padding: 20px 60px;
+            font-size: 1.5em;
             border-radius: 50px;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 8px 20px rgba(243, 156, 18, 0.4);
             font-weight: bold;
+            text-transform: uppercase;
         }
 
         button:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 7px 20px rgba(0,0,0,0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(243, 156, 18, 0.6);
         }
 
         button:disabled {
             opacity: 0.6;
             cursor: not-allowed;
+            transform: none;
+        }
+
+        button.spinning {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            animation: pulse 0.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
 
         .result {
             margin-top: 30px;
-            font-size: 1.5em;
+            font-size: 1.8em;
             font-weight: bold;
             color: #667eea;
-            min-height: 40px;
+            min-height: 50px;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .probability-table {
@@ -176,164 +241,374 @@
             color: #667eea;
             font-weight: bold;
         }
+
+        .winning-line {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #f39c12, #f39c12, transparent);
+            z-index: 3;
+            pointer-events: none;
+            box-shadow: 0 0 10px #f39c12;
+        }
+
+        @media (max-width: 768px) {
+            .reel-container {
+                width: 140px;
+                height: 100px;
+            }
+            
+            .symbol {
+                height: 100px;
+                font-size: 14px;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🎰 레스토랑 룰렛</h1>
+        <h1 id="title">🦀 꽃게당 이벤트 슬롯머신</h1>
         
-        <div class="roulette-container">
-            <div class="pointer"></div>
-            <div class="wheel" id="wheel"></div>
-            <div class="center-circle">START</div>
+        <div class="language-selector">
+            <button class="lang-btn active" onclick="changeLanguage('ko')">한국어</button>
+            <button class="lang-btn" onclick="changeLanguage('en')">English</button>
+            <button class="lang-btn" onclick="changeLanguage('zh')">中文</button>
+            <button class="lang-btn" onclick="changeLanguage('ja')">日本語</button>
         </div>
+        
+        <div class="slot-machine">
+            <div class="slot-display">
+                <div class="winning-line"></div>
+                <div class="reel-container">
+                    <div class="reel" id="reel1"></div>
+                </div>
+                <div class="reel-container">
+                    <div class="reel" id="reel2"></div>
+                </div>
+            </div>
 
-        <button id="spinBtn" onclick="spin()">룰렛 돌리기!</button>
+            <button id="spinBtn" onclick="spin()">🎰 SPIN 🎰</button>
+        </div>
         
         <div class="result" id="result"></div>
 
         <div class="probability-table">
-            <h3>🎁 경품 확률</h3>
+            <h3 id="prizeTitle">🎁 경품 목록</h3>
             <div class="probability-item">
-                <span class="prize-name">꽃게과자 경품</span>
-                <span class="prize-probability">30%</span>
+                <span class="prize-name" id="prize1">🦀 꽃게과자 경품</span>
             </div>
             <div class="probability-item">
-                <span class="prize-name">음료 1캔 무료</span>
-                <span class="prize-probability">11.5%</span>
+                <span class="prize-name" id="prize2">🥤 음료 1캔 무료</span>
             </div>
             <div class="probability-item">
-                <span class="prize-name">주류 1병 무료</span>
-                <span class="prize-probability">5%</span>
+                <span class="prize-name" id="prize3">🍺 주류 1병 무료</span>
             </div>
             <div class="probability-item">
-                <span class="prize-name">간장새우 4마리 or 대하장 2마리</span>
-                <span class="prize-probability">3%</span>
+                <span class="prize-name" id="prize4">🦐 간장새우 4마리 or 대하장 2마리</span>
             </div>
             <div class="probability-item">
-                <span class="prize-name">전액 무료</span>
-                <span class="prize-probability">0.5%</span>
+                <span class="prize-name" id="prize5">💰 전액 무료</span>
             </div>
             <div class="probability-item">
-                <span class="prize-name">꽝</span>
-                <span class="prize-probability">50%</span>
-            </div>
-            <div class="probability-item" style="margin-top: 10px; padding-top: 15px; border-top: 2px solid #667eea;">
-                <span class="prize-name" style="font-weight: bold;">당첨 확률 (꽝 제외)</span>
-                <span class="prize-probability" style="font-size: 1.1em;">50%</span>
+                <span class="prize-name" id="prize6">❌ 꽝</span>
             </div>
         </div>
     </div>
 
     <script>
-        const prizes = [
-            { name: '꽃게과자 경품', probability: 30, color: '#FF6B6B' },
-            { name: '꽝', probability: 12.5, color: '#95A5A6' },
-            { name: '음료 1캔 무료', probability: 11.5, color: '#4ECDC4' },
-            { name: '꽝', probability: 12.5, color: '#95A5A6' },
-            { name: '주류 1병 무료', probability: 5, color: '#45B7D1' },
-            { name: '꽝', probability: 12.5, color: '#95A5A6' },
-            { name: '간장새우 4마리\nor 대하장 2마리', probability: 3, color: '#F39C12' },
-            { name: '꽝', probability: 12.5, color: '#95A5A6' },
-            { name: '🎉 전액 무료 🎉', probability: 0.5, color: '#FFD700' },
-            { name: '꽃게과자 경품', probability: 2, color: '#FF6B6B' }
-        ];
-
+        let currentLang = 'ko';
         let isSpinning = false;
-        let currentRotation = 0;
+        let spinIntervals = [];
+        let finalSymbols = [];
+        let stoppedReels = 0; // Track how many reels have stopped
 
-        function createWheel() {
-            const wheel = document.getElementById('wheel');
-            const totalSegments = prizes.length;
-            const anglePerSegment = 360 / totalSegments;
+        const translations = {
+            ko: {
+                title: '🦀 꽃게당 이벤트 슬롯머신',
+                spinBtn: '🎰 START 🎰',
+                stopBtn1: '⛔ STOP 1번째 ⛔',
+                stopBtn2: '⛔ STOP 2번째 ⛔',
+                prizeTitle: '🎁 경품 목록',
+                prizes: {
+                    crab: '🦀\n꽃게과자\n경품',
+                    drink: '🥤\n음료 1캔\n무료',
+                    alcohol: '🍺\n주류 1병\n무료',
+                    shrimp: '🦐\n간장새우 4마리\nor 대하장 2마리',
+                    jackpot: '💰\n🎉전액무료🎉',
+                    lose: '❌\n꽝'
+                },
+                prize1: '🦀 꽃게과자 경품',
+                prize2: '🥤 음료 1캔 무료',
+                prize3: '🍺 주류 1병 무료',
+                prize4: '🦐 간장새우 4마리 or 대하장 2마리',
+                prize5: '💰 전액 무료',
+                prize6: '❌ 꽝',
+                congrats: '🎉 축하합니다!',
+                tryAgain: '😢 꽝! 다음 기회에!',
+                jackpotMsg: '🎊 대박! 전액 무료! 🎊'
+            },
+            en: {
+                title: '🦀 Crab Restaurant Slot Machine',
+                spinBtn: '🎰 START 🎰',
+                stopBtn1: '⛔ STOP 1st ⛔',
+                stopBtn2: '⛔ STOP 2nd ⛔',
+                prizeTitle: '🎁 Prize List',
+                prizes: {
+                    crab: '🦀\nCrab Snack\nPrize',
+                    drink: '🥤\n1 Free\nDrink',
+                    alcohol: '🍺\n1 Free\nAlcohol',
+                    shrimp: '🦐\n4 Soy Shrimp\nor 2 Prawns',
+                    jackpot: '💰\nFull Meal\nFREE!',
+                    lose: '❌\nNo Prize'
+                },
+                prize1: '🦀 Crab Snack Prize',
+                prize2: '🥤 1 Free Drink',
+                prize3: '🍺 1 Free Alcohol',
+                prize4: '🦐 4 Soy Shrimp or 2 Tiger Prawns',
+                prize5: '💰 Full Meal Free',
+                prize6: '❌ No Prize',
+                congrats: '🎉 Congratulations!',
+                tryAgain: '😢 No Prize! Try Again!',
+                jackpotMsg: '🎊 JACKPOT! Full Meal Free! 🎊'
+            },
+            zh: {
+                title: '🦀 螃蟹餐厅老虎机',
+                spinBtn: '🎰 开始 🎰',
+                stopBtn1: '⛔ 停止第1个 ⛔',
+                stopBtn2: '⛔ 停止第2个 ⛔',
+                prizeTitle: '🎁 奖品列表',
+                prizes: {
+                    crab: '🦀\n螃蟹饼干\n奖品',
+                    drink: '🥤\n免费饮料\n1罐',
+                    alcohol: '🍺\n免费酒类\n1瓶',
+                    shrimp: '🦐\n酱油虾4只\n或大虾2只',
+                    jackpot: '💰\n全额\n免费!',
+                    lose: '❌\n未中奖'
+                },
+                prize1: '🦀 螃蟹饼干奖品',
+                prize2: '🥤 免费饮料1罐',
+                prize3: '🍺 免费酒类1瓶',
+                prize4: '🦐 酱油虾4只或大虾2只',
+                prize5: '💰 全额免费',
+                prize6: '❌ 未中奖',
+                congrats: '🎉 恭喜您！',
+                tryAgain: '😢 未中奖！下次再来！',
+                jackpotMsg: '🎊 大奖! 全额免费! 🎊'
+            },
+            ja: {
+                title: '🦀 カニ食堂スロットマシン',
+                spinBtn: '🎰 スタート 🎰',
+                stopBtn1: '⛔ 1番目 停止 ⛔',
+                stopBtn2: '⛔ 2番目 停止 ⛔',
+                prizeTitle: '🎁 景品リスト',
+                prizes: {
+                    crab: '🦀\nカニ菓子\n景品',
+                    drink: '🥤\nドリンク1缶\n無料',
+                    alcohol: '🍺\nお酒1本\n無料',
+                    shrimp: '🦐\n醤油海老4尾\nまたは車海老2尾',
+                    jackpot: '💰\n全額\n無料!',
+                    lose: '❌\nハズレ'
+                },
+                prize1: '🦀 カニ菓子景品',
+                prize2: '🥤 ドリンク1缶無料',
+                prize3: '🍺 お酒1本無料',
+                prize4: '🦐 醤油海老4尾または車海老2尾',
+                prize5: '💰 全額無料',
+                prize6: '❌ ハズレ',
+                congrats: '🎉 おめでとうございます！',
+                tryAgain: '😢 ハズレ！次回頑張って！',
+                jackpotMsg: '🎊 大当たり! 全額無料! 🎊'
+            }
+        };
 
-            prizes.forEach((prize, index) => {
-                const segment = document.createElement('div');
-                segment.className = 'wheel-segment';
-                segment.style.transform = `rotate(${index * anglePerSegment}deg)`;
+        const symbolColors = {
+            crab: '#FF6B6B',
+            drink: '#4ECDC4',
+            alcohol: '#45B7D1',
+            shrimp: '#F39C12',
+            jackpot: '#FFD700',
+            lose: '#95A5A6'
+        };
 
-                const fill = document.createElement('div');
-                fill.className = 'wheel-segment-fill';
-                fill.style.background = prize.color;
-                fill.style.transform = `rotate(${anglePerSegment}deg)`;
+        function changeLanguage(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+            
+            document.getElementById('title').textContent = t.title;
+            document.getElementById('spinBtn').innerHTML = t.spinBtn;
+            document.getElementById('prizeTitle').textContent = t.prizeTitle;
+            document.getElementById('prize1').textContent = t.prize1;
+            document.getElementById('prize2').textContent = t.prize2;
+            document.getElementById('prize3').textContent = t.prize3;
+            document.getElementById('prize4').textContent = t.prize4;
+            document.getElementById('prize5').textContent = t.prize5;
+            document.getElementById('prize6').textContent = t.prize6;
+            
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            initReels();
+        }
 
-                const text = document.createElement('div');
-                text.className = 'wheel-segment-text';
-                text.innerHTML = prize.name;
-                text.style.transform = `translateY(-50%) rotate(${anglePerSegment / 2}deg)`;
+        function getWeightedSymbol() {
+            const random = Math.random() * 100;
+            
+            if (random < 30) return 'crab';
+            if (random < 50) return 'lose';
+            if (random < 61.5) return 'drink';
+            if (random < 66.5) return 'alcohol';
+            if (random < 69.5) return 'shrimp';
+            return 'jackpot';
+        }
 
-                segment.appendChild(fill);
-                segment.appendChild(text);
-                wheel.appendChild(segment);
+        function createSymbolElement(type) {
+            const t = translations[currentLang];
+            const symbol = document.createElement('div');
+            symbol.className = 'symbol';
+            symbol.textContent = t.prizes[type];
+            symbol.style.backgroundColor = symbolColors[type];
+            return symbol;
+        }
+
+        function initReels() {
+            const reels = ['reel1', 'reel2'];
+            const symbolTypes = ['crab', 'drink', 'alcohol', 'shrimp', 'jackpot', 'lose'];
+            
+            reels.forEach(reelId => {
+                const reel = document.getElementById(reelId);
+                reel.innerHTML = '';
+                
+                // Create enough symbols for smooth spinning
+                for (let i = 0; i < 20; i++) {
+                    const randomType = symbolTypes[Math.floor(Math.random() * symbolTypes.length)];
+                    reel.appendChild(createSymbolElement(randomType));
+                }
             });
         }
 
-        function getRandomPrize() {
-            const actualProbabilities = [
-                { name: '꽃게과자 경품', probability: 30 },
-                { name: '꽝', probability: 50 },
-                { name: '음료 1캔 무료', probability: 11.5 },
-                { name: '주류 1병 무료', probability: 5 },
-                { name: '간장새우 4마리\nor 대하장 2마리', probability: 3 },
-                { name: '🎉 전액 무료 🎉', probability: 0.5 }
-            ];
-
-            const random = Math.random() * 100;
-            let cumulative = 0;
-
-            for (let prize of actualProbabilities) {
-                cumulative += prize.probability;
-                if (random <= cumulative) {
-                    return prize.name;
+        function spin() {
+            const t = translations[currentLang];
+            const btn = document.getElementById('spinBtn');
+            
+            if (!isSpinning) {
+                // Start spinning all reels
+                isSpinning = true;
+                stoppedReels = 0;
+                finalSymbols = [];
+                btn.innerHTML = t.stopBtn1;
+                btn.classList.add('spinning');
+                document.getElementById('result').textContent = '';
+                
+                const reels = ['reel1', 'reel2'];
+                const symbolTypes = ['crab', 'drink', 'alcohol', 'shrimp', 'jackpot', 'lose'];
+                
+                reels.forEach((reelId) => {
+                    const reel = document.getElementById(reelId);
+                    let currentOffset = 0;
+                    
+                    const interval = setInterval(() => {
+                        currentOffset -= 15;
+                        reel.style.transform = `translateY(${currentOffset}px)`;
+                        reel.style.transition = 'none';
+                        
+                        if (currentOffset % 120 === 0) {
+                            const randomType = symbolTypes[Math.floor(Math.random() * symbolTypes.length)];
+                            reel.appendChild(createSymbolElement(randomType));
+                            
+                            if (reel.children.length > 30) {
+                                reel.removeChild(reel.firstChild);
+                                currentOffset += 120;
+                            }
+                        }
+                    }, 15);
+                    
+                    spinIntervals.push(interval);
+                });
+                
+            } else {
+                // Stop one reel at a time
+                const reelIndex = stoppedReels;
+                const reelId = ['reel1', 'reel2'][reelIndex];
+                
+                // Clear interval for this reel
+                clearInterval(spinIntervals[reelIndex]);
+                
+                // Determine final symbol for this reel
+                const finalSymbol = getWeightedSymbol();
+                finalSymbols.push(finalSymbol);
+                
+                // Stop this reel
+                const reel = document.getElementById(reelId);
+                reel.innerHTML = '';
+                reel.appendChild(createSymbolElement('lose'));
+                reel.appendChild(createSymbolElement(finalSymbol));
+                reel.appendChild(createSymbolElement('crab'));
+                
+                reel.style.transition = 'transform 0.15s ease-out';
+                reel.style.transform = 'translateY(-120px)';
+                
+                stoppedReels++;
+                
+                // Update button text for next reel or show result
+                if (stoppedReels === 1) {
+                    btn.innerHTML = t.stopBtn2;
+                } else if (stoppedReels === 2) {
+                    // All reels stopped
+                    setTimeout(() => {
+                        showResult(finalSymbols);
+                        isSpinning = false;
+                        stoppedReels = 0;
+                        finalSymbols = [];
+                        btn.innerHTML = t.spinBtn;
+                        btn.classList.remove('spinning');
+                        btn.disabled = false;
+                        spinIntervals = [];
+                    }, 200);
                 }
             }
-            return actualProbabilities[0].name;
         }
 
-        function spin() {
-            if (isSpinning) return;
+        function showResult(symbols) {
+            const t = translations[currentLang];
+            const resultDiv = document.getElementById('result');
             
-            isSpinning = true;
-            document.getElementById('spinBtn').disabled = true;
-            document.getElementById('result').textContent = '';
-
-            const selectedPrize = getRandomPrize();
+            // Check if both symbols match (2 symbols now)
+            const allSame = symbols[0] === symbols[1];
             
-            const prizeIndices = prizes
-                .map((p, i) => ({ name: p.name, index: i }))
-                .filter(p => p.name === selectedPrize);
-            
-            const randomPrizeIndex = prizeIndices[Math.floor(Math.random() * prizeIndices.length)].index;
-            
-            const anglePerSegment = 360 / prizes.length;
-            const targetAngle = randomPrizeIndex * anglePerSegment;
-            
-            const spins = 5 + Math.random() * 3;
-            const finalRotation = (360 * spins) + (360 - targetAngle) + (anglePerSegment / 2);
-            
-            const wheel = document.getElementById('wheel');
-            currentRotation += finalRotation;
-            wheel.style.transform = `rotate(${currentRotation}deg)`;
-
-            setTimeout(() => {
-                const resultDiv = document.getElementById('result');
-                if (selectedPrize === '꽝') {
-                    resultDiv.textContent = '😢 ' + selectedPrize + '! 다음 기회에!';
-                    resultDiv.style.color = '#95A5A6';
-                } else if (selectedPrize === '🎉 전액 무료 🎉') {
-                    resultDiv.textContent = '🎊 축하합니다! ' + selectedPrize + ' 🎊';
+            if (allSame) {
+                const prizeType = symbols[0];
+                
+                if (prizeType === 'jackpot') {
+                    resultDiv.innerHTML = t.jackpotMsg;
                     resultDiv.style.color = '#FFD700';
+                } else if (prizeType === 'lose') {
+                    resultDiv.textContent = t.tryAgain;
+                    resultDiv.style.color = '#95A5A6';
                 } else {
-                    resultDiv.textContent = '🎉 축하합니다! ' + selectedPrize + '!';
+                    const prizeMap = {
+                        crab: t.prize1,
+                        drink: t.prize2,
+                        alcohol: t.prize3,
+                        shrimp: t.prize4
+                    };
+                    resultDiv.innerHTML = `${t.congrats}<br>${prizeMap[prizeType]}`;
                     resultDiv.style.color = '#667eea';
                 }
-                
-                isSpinning = false;
-                document.getElementById('spinBtn').disabled = false;
-            }, 4000);
+            } else {
+                resultDiv.textContent = t.tryAgain;
+                resultDiv.style.color = '#95A5A6';
+            }
         }
 
-        createWheel();
+        // Initialize
+        initReels();
     </script>
 </body>
 </html>
