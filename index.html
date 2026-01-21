@@ -317,7 +317,7 @@
                 <span class="prize-name" id="prize5">💰 전액 무료</span>
             </div>
             <div class="probability-item">
-                <span class="prize-name" id="prize6">❌ 꽝</span>
+                <span class="prize-name" id="prize6">🎫 1000원 할인</span>
             </div>
         </div>
     </div>
@@ -342,16 +342,16 @@
                     alcohol: '🍺\n주류 1병\n무료',
                     shrimp: '🦐\n간장새우 4마리\nor 대하장 2마리',
                     jackpot: '💰\n🎉전액무료🎉',
-                    lose: '❌\n꽝'
+                    discount1000: '🎫\n1000원\n할인'
                 },
                 prize1: '🦀 꽃게과자 경품',
                 prize2: '🥤 음료 1캔 무료',
                 prize3: '🍺 주류 1병 무료',
                 prize4: '🦐 간장새우 4마리 or 대하장 2마리',
                 prize5: '💰 전액 무료',
-                prize6: '❌ 꽝',
+                prize6: '🎫 1000원 할인',
                 congrats: '🎉 축하합니다!',
-                tryAgain: '😢 꽝! 다음 기회에!',
+                tryAgain: '😢 아쉽네요! 다음 기회에!',
                 jackpotMsg: '🎊 대박! 전액 무료! 🎊'
             },
             en: {
@@ -366,16 +366,16 @@
                     alcohol: '🍺\n1 Free\nAlcohol',
                     shrimp: '🦐\n4 Soy Shrimp\nor 2 Prawns',
                     jackpot: '💰\nFull Meal\nFREE!',
-                    lose: '❌\nNo Prize'
+                    discount1000: '🎫\n1000₩\nDiscount'
                 },
                 prize1: '🦀 Crab Snack Prize',
                 prize2: '🥤 1 Free Drink',
                 prize3: '🍺 1 Free Alcohol',
                 prize4: '🦐 4 Soy Shrimp or 2 Tiger Prawns',
                 prize5: '💰 Full Meal Free',
-                prize6: '❌ No Prize',
+                prize6: '🎫 1000₩ Discount',
                 congrats: '🎉 Congratulations!',
-                tryAgain: '😢 No Prize! Try Again!',
+                tryAgain: '😢 Better luck next time!',
                 jackpotMsg: '🎊 JACKPOT! Full Meal Free! 🎊'
             },
             zh: {
@@ -390,16 +390,16 @@
                     alcohol: '🍺\n免费酒类\n1瓶',
                     shrimp: '🦐\n酱油虾4只\n或大虾2只',
                     jackpot: '💰\n全额\n免费!',
-                    lose: '❌\n未中奖'
+                    discount1000: '🎫\n1000韩元\n折扣'
                 },
                 prize1: '🦀 螃蟹饼干奖品',
                 prize2: '🥤 免费饮料1罐',
                 prize3: '🍺 免费酒类1瓶',
                 prize4: '🦐 酱油虾4只或大虾2只',
                 prize5: '💰 全额免费',
-                prize6: '❌ 未中奖',
+                prize6: '🎫 1000韩元折扣',
                 congrats: '🎉 恭喜您！',
-                tryAgain: '😢 未中奖！下次再来！',
+                tryAgain: '😢 下次再来！',
                 jackpotMsg: '🎊 大奖! 全额免费! 🎊'
             },
             ja: {
@@ -414,16 +414,16 @@
                     alcohol: '🍺\nお酒1本\n無料',
                     shrimp: '🦐\n醤油海老4尾\nまたは車海老2尾',
                     jackpot: '💰\n全額\n無料!',
-                    lose: '❌\nハズレ'
+                    discount1000: '🎫\n1000ウォン\n割引'
                 },
                 prize1: '🦀 カニ菓子景品',
                 prize2: '🥤 ドリンク1缶無料',
                 prize3: '🍺 お酒1本無料',
                 prize4: '🦐 醤油海老4尾または車海老2尾',
                 prize5: '💰 全額無料',
-                prize6: '❌ ハズレ',
+                prize6: '🎫 1000ウォン割引',
                 congrats: '🎉 おめでとうございます！',
-                tryAgain: '😢 ハズレ！次回頑張って！',
+                tryAgain: '😢 また次回頑張って！',
                 jackpotMsg: '🎊 大当たり! 全額無料! 🎊'
             }
         };
@@ -434,7 +434,7 @@
             alcohol: '#45B7D1',
             shrimp: '#F39C12',
             jackpot: '#FFD700',
-            lose: '#95A5A6'
+            discount1000: '#9b59b6'
         };
 
         function changeLanguage(lang) {
@@ -457,15 +457,26 @@
             initReels();
         }
 
-        function getWeightedSymbol() {
+        function getWeightedSymbol(reelNumber) {
             const random = Math.random() * 100;
             
-            if (random < 30) return 'crab';
-            if (random < 50) return 'lose';
-            if (random < 61.5) return 'drink';
-            if (random < 66.5) return 'alcohol';
-            if (random < 69.5) return 'shrimp';
-            return 'jackpot';
+            if (reelNumber === 1) {
+                // First reel - jackpot extremely rare (0.001%)
+                if (random < 25) return 'crab';           // 25%
+                if (random < 60) return 'discount1000';   // 35%
+                if (random < 70) return 'drink';          // 10%
+                if (random < 74) return 'alcohol';        // 4%
+                if (random < 77.999) return 'shrimp';      // 3.999%
+                return 'jackpot';                         // 0.001%
+            } else {
+                // Second reel - jackpot more common (0.001%)
+                if (random < 25) return 'crab';           // 25%
+                if (random < 60) return 'discount1000';   // 35%
+                if (random < 70) return 'drink';          // 10%
+                if (random < 74) return 'alcohol';        // 4% 
+                if (random < 77.999) return 'shrimp';      // 3.999%
+                return 'jackpot';                         // 0.001%
+            }
         }
 
         function createSymbolElement(type) {
@@ -479,7 +490,7 @@
 
         function initReels() {
             const reels = ['reel1', 'reel2'];
-            const symbolTypes = ['crab', 'drink', 'alcohol', 'shrimp', 'jackpot', 'lose'];
+            const symbolTypes = ['crab', 'drink', 'alcohol', 'shrimp', 'jackpot', 'discount1000'];
             
             reels.forEach(reelId => {
                 const reel = document.getElementById(reelId);
@@ -507,7 +518,7 @@
                 document.getElementById('result').textContent = '';
                 
                 const reels = ['reel1', 'reel2'];
-                const symbolTypes = ['crab', 'drink', 'alcohol', 'shrimp', 'jackpot', 'lose'];
+                const symbolTypes = ['crab', 'drink', 'alcohol', 'shrimp', 'jackpot', 'discount1000'];
                 
                 reels.forEach((reelId) => {
                     const reel = document.getElementById(reelId);
@@ -540,14 +551,14 @@
                 // Clear interval for this reel
                 clearInterval(spinIntervals[reelIndex]);
                 
-                // Determine final symbol for this reel
-                const finalSymbol = getWeightedSymbol();
+                // Determine final symbol for this reel (pass reel number: 1 or 2)
+                const finalSymbol = getWeightedSymbol(reelIndex + 1);
                 finalSymbols.push(finalSymbol);
                 
                 // Stop this reel
                 const reel = document.getElementById(reelId);
                 reel.innerHTML = '';
-                reel.appendChild(createSymbolElement('lose'));
+                reel.appendChild(createSymbolElement('discount1000'));
                 reel.appendChild(createSymbolElement(finalSymbol));
                 reel.appendChild(createSymbolElement('crab'));
                 
@@ -588,9 +599,9 @@
                 if (prizeType === 'jackpot') {
                     resultDiv.innerHTML = t.jackpotMsg;
                     resultDiv.style.color = '#FFD700';
-                } else if (prizeType === 'lose') {
-                    resultDiv.textContent = t.tryAgain;
-                    resultDiv.style.color = '#95A5A6';
+                } else if (prizeType === 'discount1000') {
+                    resultDiv.innerHTML = `${t.congrats}<br>${t.prize6}`;
+                    resultDiv.style.color = '#9b59b6';
                 } else {
                     const prizeMap = {
                         crab: t.prize1,
